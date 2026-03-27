@@ -1,23 +1,12 @@
----
-{}
----
-language: en
-license: cc-by-4.0
-tags:
-- text-classification
-- authorship-verification
-- bilstm
-- stylometry
-repo: https://github.com/joshua-chong/nlu_cw
+{{ card_data }}
 
 ---
 
-# Model Card for w51312jc-m84507sc-AV
+# Model Card for {{ model_id | default("My Model", true) }}
 
 <!-- Provide a quick summary of what the model is/does. -->
 
-A supervised binary classification mode for authorship verification.
-      It predicts whether two input texts were written by the same author
+{{ model_summary | default("", true) }}
 
 
 ## Model Details
@@ -26,23 +15,20 @@ A supervised binary classification mode for authorship verification.
 
 <!-- Provide a longer summary of what this model is. -->
 
-This solution is a Siamese neural network for authorship verification.
-      It combines three feature streams: 1) Word-level representations using pretrained GloVe embeddings and a shared BiLSTM encoder with attention pooling,
-      2) character-level representation using CharCNN to captre spelling and punctuation patterns, and 3) 29 handcrafted
-      stylometric feature differences between the two inputs. The final classifier uses the combined representation to produce a binary prediction
+{{ model_description | default("", true) }}
 
-- **Developed by:** Joshua Chong and Stanley Ching
-- **Language(s):** English
-- **Model type:** Supervised
-- **Model architecture:** Siamese BiLSTM + Character CNN + Stylometric Features
-- **Finetuned from model [optional]:** GloVe pretrained word embeddings
+- **Developed by:** {{ developers | default("[More Information Needed]", true)}}
+- **Language(s):** {{ language | default("[More Information Needed]", true)}}
+- **Model type:** {{ model_type | default("[More Information Needed]", true)}}
+- **Model architecture:** {{ model_architecture | default("[More Information Needed]", true)}}
+- **Finetuned from model [optional]:** {{ base_model | default("[More Information Needed]", true)}}
 
 ### Model Resources
 
 <!-- Provide links where applicable. -->
 
-- **Repository:** https://nlp.stanford.edu/projects/glove/
-- **Paper or documentation:** https://aclanthology.org/D14-1162.pdf
+- **Repository:** {{ base_model_repo | default("[More Information Needed]", true)}}
+- **Paper or documentation:** {{ base_model_paper | default("[More Information Needed]", true)}}
 
 ## Training Details
 
@@ -50,9 +36,7 @@ This solution is a Siamese neural network for authorship verification.
 
 <!-- This is a short stub of information on the training data that was used, and documentation related to data pre-processing or additional filtering (if applicable). -->
 
-The model was trained on the provided AV training set which contains 27,643 pairs of texts. Each of them includes text_1, text_2 
-      and a binary label indicating if both of the texts is written by the same author. The set had 13,950 negative samples and 13,693 positive samples.
-      Missing texts found in the set were replaced with empty string. Stylometric feature vectors are extracted from each pair and standardised using a StandardScaler. 
+{{ training_data | default("[More Information Needed]", true)}}
 
 ### Training Procedure
 
@@ -62,40 +46,13 @@ The model was trained on the provided AV training set which contains 27,643 pair
 
 <!-- This is a summary of the values of hyperparameters used in training the model. -->
 
-
-      - max_len: 200 word tokens
-      - batch_size: 64
-      - accum_steps: 1
-      - effective_batch_size: 64
-      - embedding_dim: 300
-      - max_vocab: 50000
-      - hidden_dim: 128
-      - num_layers: 2
-      - dropout: 0.25
-      - embedding_dropout: 0.15
-      - spatial_dropout: 0.1
-      - char_vocab_size: 128
-      - char_embed_dim: 30
-      - char_cnn_filters: 64
-      - char_max_len: 800
-      - learning_rate: 2e-3
-      - weight_decay: 1e-4
-      - label_smoothing: 0.02
-      - num_epochs: 20
-      - patience: 5
-      - optimizer: AdamW
-      - scheduler: CosineAnnealingLR
-      - loss: BCEWithLogitsLoss
-      - seed: 42
+{{ hyperparameters | default("[More Information Needed]", true)}}
 
 #### Speeds, Sizes, Times
 
 <!-- This section provides information about how roughly how long it takes to train the model and the size of the resulting model. -->
 
-
-      - overall training time: 2 hours
-      - duration per training epoch: 6 minutes
-      - model size: 300MB
+{{ speeds_sizes_times | default("[More Information Needed]", true)}}
 
 ## Evaluation
 
@@ -107,62 +64,37 @@ The model was trained on the provided AV training set which contains 27,643 pair
 
 <!-- This should describe any evaluation data used (e.g., the development/validation set provided). -->
 
-For now, the model is evaluated on the provided development set containing 5993 text pairs.
-      The label distribution was 2,937 negative samples and 3,056 positive samples.
+{{ testing_data | default("[More Information Needed]", true)}}
 
 #### Metrics
 
 <!-- These are the evaluation metrics being used. -->
 
-
-      - Precision
-      - Recall
-      - F1-score
-      - Accuracy
+{{ testing_metrics | default("[More Information Needed]", true)}}
 
 ### Results
 
-The model obtained an F1-score of 75.97% and an accuracy of 75.97%.
+{{ results | default("[More Information Needed]", true)}}
 
 ## Technical Specifications
 
 ### Hardware
 
-
-      - RAM: at least 16 GB
-      - Storage: at least 2GB,
-      - GPU: CUDA-capable GPU recommended for training,
-      - The notebook was run on device: cuda,
-      
+{{ hardware_requirements | default("[More Information Needed]", true)}}
 
 ### Software
 
-
-      - Python
-      - PyTorch
-      - NumPy
-      - pandas
-      - scikit-learn
-      - NLTK
-      - matplotlib
-      - seaborn
-      - tqdm
-      
+{{ software | default("[More Information Needed]", true)}}
 
 ## Bias, Risks, and Limitations
 
 <!-- This section is meant to convey both technical and sociotechnical limitations. -->
 
-The model is designed to handle English-language authorship verification and may not
-      generate well to other languages or domains. Because it uses stylometric features and language-specific signals.
-      Inputs are also truncated to 200 word tokens and 800 characters, so performance may degrade with longer inputs as 
-      important information may be removed. The model also depends on handcrafted stylometric features, 
-      which may not capture deeper discourse-level writing style
+{{ bias_risks_limitations | default("[More Information Needed]", true)}}
 
 ## Additional Information
 
 <!-- Any other information that would be useful for other people to know. -->
 
-The model includes swap augmentation during training so that text order doesnt affect performance.
-      Stylometric features are extracted as absolute difference between the inputs and standardised before passing into the model.
-      Combining word-level, character-level and handcrafted stylistic features to capture different aspect of writing styles.
+{{ additional_information | default("[More Information Needed]", true)}}
+
