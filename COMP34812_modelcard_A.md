@@ -83,7 +83,7 @@ to strings before feature extraction.
 <!-- This section provides information about how roughly how long it takes to train the model and the size of the resulting model. -->
 
 
-    - overall training time: 3-5 minutes total
+    - overall training time: 8-10 minutes total with T4 GPU
     - lr_model.pkl: 158 KB
     - sgd_model.pkl: 473 KB
     - char_tfidf.pkl: 333 KB
