@@ -16,8 +16,8 @@ repo: https://github.com/joshua-chong/nlu_cw
 
 <!-- Provide a quick summary of what the model is/does. -->
 
-A supervised binary classification mode for authorship verification.
-It predicts whether two input texts were written by the same author using non-transformer neural network architecture.
+A supervised binary classification model for authorship verification.
+It predicts whether two input texts were written by the same author using a non-transformer neural network architecture.
 
 
 ## Model Details
@@ -29,8 +29,9 @@ It predicts whether two input texts were written by the same author using non-tr
 This solution is a Siamese neural network for authorship verification.
 It combines three feature streams: 
 1) Word-level representations using pretrained GloVe embeddings and a shared BiLSTM encoder with attention pooling,
-2) character-level representation using CharCNN to capture spelling and punctuation patterns, and 3) 29 handcrafted
-stylometric feature differences between the two inputs. The final classifier uses the combined representation to produce a binary prediction
+2) character-level representation using CharCNN to capture spelling and punctuation patterns, and
+3) 29 handcrafted stylometric feature differences between the two inputs.
+The final classifier uses the combined representation to produce a binary prediction.
 
 - **Developed by:** Joshua Chong and Stanley Ching
 - **Language(s):** English
@@ -51,9 +52,9 @@ stylometric feature differences between the two inputs. The final classifier use
 
 <!-- This is a short stub of information on the training data that was used, and documentation related to data pre-processing or additional filtering (if applicable). -->
 
-The model was trained on the provided AV training set which contains 27,643 pairs of texts. Each of them includes text_1, text_2 
-and a binary label indicating if both of the texts is written by the same author. The set had 13,950 negative samples and 13,693 positive samples.
-Missing texts found in the set were replaced with empty string. Stylometric feature vectors are extracted from each pair and standardised using a StandardScaler. 
+The model was trained on the provided AV training set which contains 27,643 pairs of texts. Each pair includes text_1, text_2
+and a binary label indicating whether both texts were written by the same author. The set had 13,950 negative samples and 13,693 positive samples.
+Missing texts found in the set were replaced with empty strings. Stylometric feature vectors are extracted from each pair and standardised using a StandardScaler.
 
 ### Training Procedure
 
@@ -96,7 +97,8 @@ Missing texts found in the set were replaced with empty string. Stylometric feat
 
     - overall training time: 2 hours
     - duration per training epoch: 6 minutes
-    - best_siamese_bilstm_v2.pt: 74.2 MB
+    - best epoch: 19
+    - approach_b_model.pt: 74.2 MB
     - vocab.pkl: 640 KB
     - style_scaler.pkl: 1 KB
     - total artifact size for the final pipeline: approximately 74.8 MB
@@ -111,7 +113,7 @@ Missing texts found in the set were replaced with empty string. Stylometric feat
 
 <!-- This should describe any evaluation data used (e.g., the development/validation set provided). -->
 
-For now, the model is evaluated on the provided development set containing 5993 text pairs.
+The model is evaluated on the provided development set containing 5,993 text pairs.
 The label distribution was 2,937 negative samples and 3,056 positive samples.
 
 #### Metrics
@@ -126,7 +128,13 @@ The label distribution was 2,937 negative samples and 3,056 positive samples.
 
 ### Results
 
-The model obtained an F1-score of 75.97% and an accuracy of 75.97%.
+The model achieved a macro F1-score of 76.33% and an accuracy of 76.36% at the default threshold of 0.5.
+Threshold optimisation on the dev set identified an optimal threshold of 0.48, yielding a marginal improvement to F1 76.36%.
+
+Per-class results at threshold 0.5:
+
+    - Different Author (0): precision 0.76, recall 0.75, F1 0.76
+    - Same Author (1):      precision 0.76, recall 0.78, F1 0.77
 
 ## Technical Specifications
 
@@ -134,10 +142,10 @@ The model obtained an F1-score of 75.97% and an accuracy of 75.97%.
 
 
     - RAM: at least 16 GB
-    - Storage: at least 2GB,
-    - GPU: CUDA-capable GPU recommended for training,
-    - The notebook was run on device: cuda,
-    
+    - Storage: at least 2 GB
+    - GPU: CUDA-capable GPU recommended for training
+    - The notebook was run on device: cuda
+
 
 ### Software
 
@@ -151,22 +159,23 @@ The model obtained an F1-score of 75.97% and an accuracy of 75.97%.
     - matplotlib
     - seaborn
     - tqdm
-      
+
 
 ## Bias, Risks, and Limitations
 
 <!-- This section is meant to convey both technical and sociotechnical limitations. -->
 
-The model is designed to handle English-language authorship verification and may not
-generate well to other languages or domains. Because it uses stylometric features and language-specific signals.
-Inputs are also truncated to 200 word tokens and 800 characters, so performance may degrade with longer inputs as 
-important information may be removed. The model also depends on handcrafted stylometric features, 
-which may not capture deeper discourse-level writing style
+The model is designed for English-language authorship verification and may not generalise well to other languages or domains,
+as it relies on stylometric features and language-specific signals. Inputs are truncated to 200 word tokens and 800 characters,
+so performance may degrade on longer texts where important stylistic information is removed. The model also depends on
+handcrafted stylometric features which may not capture deeper discourse-level writing style. The model shows signs of
+overconfidence on training data (train loss 0.25 vs dev loss 0.57 at best checkpoint), though dev F1 remains stable,
+suggesting the classifier generalises despite miscalibrated probabilities.
 
 ## Additional Information
 
 <!-- Any other information that would be useful for other people to know. -->
 
-The model includes swap augmentation during training so that text order doesnt affect performance.
-Stylometric features are extracted as absolute difference between the inputs and standardised before passing into the model.
-Combining word-level, character-level and handcrafted stylistic features to capture different aspect of writing styles.
+The model uses swap augmentation during training so that text order does not affect performance.
+Stylometric features are extracted as absolute differences between the two inputs and standardised before being passed into the model.
+Word-level, character-level, and handcrafted stylistic features are combined to capture different aspects of writing style.
